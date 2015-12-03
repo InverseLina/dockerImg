@@ -1,7 +1,7 @@
 #!/bin/bash
 TOMCAT_USER=${TOMCAT_USER}
 TOMCAT_PWD=${TOMCAT_PWD}
-if [ -e /scripts/firstrun ]; then
+if [ ! -e ${CATALINA_HOME}/conf/tomcat-users.xml ]; then
 echo '<tomcat-users>'>${CATALINA_HOME}/conf/tomcat-users.xml
 echo '<role rolename="manager-gui"/>' >> ${CATALINA_HOME}/conf/tomcat-users.xml
 echo '<role rolename="manager-script"/>' >> ${CATALINA_HOME}/conf/tomcat-users.xml
@@ -10,7 +10,17 @@ echo '<role rolename="admin-gui"/>' >> ${CATALINA_HOME}/conf/tomcat-users.xml
 echo '<role rolename="admin-script"/>' >> ${CATALINA_HOME}/conf/tomcat-users.xml
 echo "<user username=\"${TOMCAT_USER}\" password=\"${TOMCAT_PWD}\" roles=\"manager-gui,manager-script,manager-jmx,admin-gui, admin-script\"/>" >> ${CATALINA_HOME}/conf/tomcat-users.xml
 echo '</tomcat-users>' >> ${CATALINA_HOME}/conf/tomcat-users.xml 
-rm  /scripts/firstrun
+mv ${CATALINA_HOME}/webapps/ROOT ${CATALINA_HOME}/webapps/welcome
 fi
 
-exec ${CATALINA_HOME}/bin/catalina.sh run
+if [ ! -e ${CATALINA_HOME}/logs/catalina.out  ]; then
+  echo ''>${CATALINA_HOME}/logs/catalina.out
+fi
+
+if [ ! -e ${CATALINA_HOME}/keep  ]; then
+  echo 'This is the keep file.'>${CATALINA_HOME}/keep
+fi
+
+${CATALINA_HOME}/bin/catalina.sh start
+
+tail -f ${CATALINA_HOME}/keep
