@@ -92,4 +92,10 @@ if [ "$1" = 'postgres' ]; then
 	exec gosu postgres "$@"
 fi
 
+if [ ! -e /keep  ]; then
+  echo 'This is the keep file.'>/keep
+fi
+
 exec postgres
+
+tail -f /keep
